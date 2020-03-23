@@ -32,6 +32,8 @@ countries = ['Italy',
 ##             'South_Korea',
 ##             'COUNTRY',
 ##             'OTHER_COUNTRY',
+##             'Japan',
+##             'Netherlands',
               ]
 
 ###############
@@ -44,8 +46,12 @@ fit = 'logistic'#None
 
 
 #The minimum number of cases to start from (the first few points might be more noise)
-# Use 15 if using US data, 30 for South Korea
+# Use 15 if using US data, 30 for South Korea or Japan
 min_cases = 10
+
+
+#Start fitting from this point (early values might not be accurate)
+fit_start = 3
 
 
 #Extend fit this many days to see the trajectory
@@ -61,9 +67,6 @@ norm = False#True
 # Currently no death column in the Irish dataset on wikipedia
 death = False#True
 
-
-#Start fitting from this point (early values might not be accurate)
-fit_start = 2
 
 
 '''TIME defaults to the number of days since min_cases infections,
@@ -104,11 +107,13 @@ def logistic(x,a,b,c):
 
 
 ############
+#Get Data
+
+#Use ggplot style
+#plt.style.use('ggplot')
+
 #Change values associated with figsize to change figure dimensions
 plt.figure(figsize=(7,6))
-
-#Shows gridlines with some transparency
-plt.grid(alpha=0.5)
 ax = plt.gca()
 
 
@@ -162,6 +167,7 @@ for country in countries:
         cases = [u/(population/1e6) for u in cases]
 
 
+            
     #Fits a line to the semi-log data
     linear_fit = curve_fit(linear,time[fit_start:],  np.log(cases[fit_start:]),p0=[1,0.1])
 
@@ -194,20 +200,23 @@ for country in countries:
             # exponential growth parameter
             print(country,cases[-1],y_fit[-1])
 
-    #Cycles through colours
-    color=next(ax._get_lines.prop_cycler)['color']
-
+    
     #Keeps Ireland green!!
-    if color == '#2ca02c' and country != 'Ireland' and 'Ireland' in countries:
-        color=next(ax._get_lines.prop_cycler)['color']
     if country == 'Ireland':
         color = '#2ca02c'
+    else:
+        #Cycles through colours
+        color=next(ax._get_lines.prop_cycler)['color']
+
+    if color == '#2ca02c' and country != 'Ireland':# and 'Ireland' in countries:
+        color=next(ax._get_lines.prop_cycler)['color']
+
 
     #Plot the data
-    plt.plot(time,cases, 'o', label=country, color=color, ms=ms)#+' ('+str(b)+')',color=color)
+    plt.plot(time,cases, 'o', label=country, color=color, ms=ms,alpha=0.9)#+' ('+str(b)+')',color=color)
     if fit != None:
         #Plot the fit
-        plt.plot(x,y_fit, ':',color=color)
+        plt.plot(x,y_fit, ':',color=color,alpha=0.6)
 
 
 
@@ -215,7 +224,10 @@ for country in countries:
 #Figure details
 
 
-plt.xlim(-1)
+#Shows gridlines with some transparency
+plt.grid(True,which='both',linestyle=':',alpha=0.7)
+
+plt.xlim(-1,34)
 #plt.ylim(8,100000)
 plt.legend()
 
@@ -226,6 +238,8 @@ plt.yscale('log')
 #Axis labels under various conditions
 if norm == True:
     plt.ylabel('Number of cases per million',fontsize=17)
+    if death == True:
+        plt.ylabel('Number of deaths per million',fontsize=16)
 else:
     if death == True:
         plt.ylabel('Number of deaths',fontsize=16)
@@ -233,9 +247,11 @@ else:
         plt.ylabel('Number of cases',fontsize=16)
 
 if TIME == 'date':
-    plt.xlabel('Number of days since 1st February',fontsize=16)
+    plt.xlabel('Number of days since '+str(date).split()[0],fontsize=16)
+elif death == True:
+    plt.xlabel('Number of days since '+str(min_cases)+' deaths recorded',fontsize=15)
 else:
-    plt.xlabel('Number of days since 10 cases',fontsize=16)
+    plt.xlabel('Number of days since '+str(min_cases)+' cases',fontsize=16)
 
 
 #Display the figure
