@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+#
+# Created by Pádraig Mac Carron
+#
 #################
 #Import Libraries
 import numpy as np
@@ -18,10 +22,10 @@ from read_wiki_data import get_population
     to this list in the same format'''
 
 countries = ['Italy',
-##             'Ireland',
+             'Ireland',
              'United_Kingdom',
 ##             'France',
-             'Germany',
+##             'Germany',
 ##             'United_States',
 ##             'Iran',
              'Spain',
