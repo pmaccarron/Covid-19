@@ -1,5 +1,7 @@
 # Covid-19
-Pulls data from Wikipedia and plots the number of cases
+Pulls data from Wikipedia and plots the number of cases.
+
+Requires Python 3+, matplotlib, numpy and scipy.
 
 Use the covid19.py script, keep the read_wiki_data.py file in the same folder.
 
