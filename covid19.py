@@ -211,8 +211,8 @@ for country in countries:
             #Prints the country, the last number of cases, the
             # logistic cutoff and the growth parameter
             print('\nLogistic Growth fit:')
-            print('Predicted tomorrow:',int(y_fit[-fit_pred]),'
-                  (',int(y_fit[-fit_pred]-cases[-1]),'new cases )')
+            print('Predicted tomorrow:',int(y_fit[-fit_pred]),
+                  '(',int(y_fit[-fit_pred]-cases[-1]),'new cases )')
 
             b_log = round(logistic_fit[0][1],2)
             print('Cutoff parameter:',round(logistic_fit[0][2],1),'Growth parameter:',b)
