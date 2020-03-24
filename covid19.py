@@ -227,7 +227,7 @@ for country in countries:
 #Shows gridlines with some transparency
 plt.grid(True,which='both',linestyle=':',alpha=0.7)
 
-plt.xlim(-1,34)
+plt.xlim(-1)#,34)
 #plt.ylim(8,100000)
 plt.legend()
 
