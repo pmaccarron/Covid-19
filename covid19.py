@@ -206,24 +206,30 @@ for country in countries:
         #Get the x and y for the fit
         x = np.arange(time[fit_start],max(time)+1+fit_pred,1)
         y_fit = exp(x,np.exp(linear_fit[0][0]),linear_fit[0][1])
+        exp_pred = y_fit[-fit_pred]
         if fit == 'logistic':
             y_fit = logistic(x,logistic_fit[0][0],logistic_fit[0][1],logistic_fit[0][2])
             #Prints the country, the last number of cases, the
             # logistic cutoff and the growth parameter
             print('\nLogistic Growth fit:')
-            print('Predicted tomorrow:',int(y_fit[-fit_pred]),
-                  '(',int(y_fit[-fit_pred]-cases[-1]),'new cases )')
+            if fit_pred>0:
+                print('Predicted tomorrow:',int(y_fit[-fit_pred]),
+                  '(',int(y_fit[-fit_pred]-cases[-1])
+                      ,'new cases )')
+                guess_log = int(y_fit[-fit_pred]-cases[-1])
 
             b_log = round(logistic_fit[0][1],2)
-            print('Cutoff parameter:',round(logistic_fit[0][2],1),'Growth parameter:',b)
-        else:
-            #Prints the country, the last number of cases and the
-            # exponential growth parameter
-            print('\nExponential Growth fit')
-            print('Predicted tomorrow:',round(y_fit[-fit_pred],0),
-                  '(',round(y_fit[-fit_pred]-cases[-1],0),'new cases )')
-            print('Exponential growth parameter:',b)
-
+            print('Cutoff parameter:',round(logistic_fit[0][2],1),'   Growth parameter:',b)
+        if fit != None:
+            if fit != 'logistic' or int(y_fit[-fit_pred]-cases[-1]) < cases[-1]-cases[-2]:
+                #Prints the country, the last number of cases and the
+                # exponential growth parameter
+                print('\nExponential Growth fit:')
+                if fit_pred > 0:
+                    print('Predicted tomorrow:',int(exp_pred),
+                      '(',int(exp_pred-cases[-1]),'new cases )')
+                    guess_exp = int(exp_pred-cases[-1])
+                print('Exponential growth parameter:',b)
 
     
     #Keeps Ireland green!!
