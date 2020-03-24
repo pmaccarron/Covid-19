@@ -60,7 +60,7 @@ fit_pred = 5
 
 #Normalise by population
 ''' Enter True to normalise by population and show per million'''
-norm = False#True
+norm = False
 
 
 ''' Change death to true to plot deaths instead of number of cases'''
@@ -68,15 +68,21 @@ norm = False#True
 death = False#True
 
 
+'''Change to False for linear scale, 'log' for log scale'''
+yscale = 'log'
+
+
+###############
+#Less important
 
 '''TIME defaults to the number of days since min_cases infections,
- put in 'date' to plot from a certain date and then choose that date below'''
+ put in 'date' to plot from a certain date abd then choose that date below'''
 # Note that starting from a specific date, the fits won't be accurate
 # as it will use the number of days for the x value
 TIME = False#'date'
 
 #if TIME is 'date', need to choose the date to start plotting from
-date = datetime.datetime(2020,2,1)
+date = '2020-02-01'
 
 
 #The marker size for the plot
@@ -115,6 +121,10 @@ def logistic(x,a,b,c):
 #Change values associated with figsize to change figure dimensions
 plt.figure(figsize=(7,6))
 ax = plt.gca()
+
+
+case = 'cases' if death!=True else 'deaths'
+date = datetime.datetime.strptime(date,'%Y-%m-%d')
 
 
 #Iterate through countries list
@@ -166,7 +176,6 @@ for country in countries:
         # (change 1e6 to say 1e5 if want 100,000 instead of million
         cases = [u/(population/1e6) for u in cases]
 
-
             
     #Fits a line to the semi-log data
     linear_fit = curve_fit(linear,time[fit_start:],  np.log(cases[fit_start:]),p0=[1,0.1])
@@ -187,6 +196,13 @@ for country in countries:
 
         #b = round(logistic_fit[0][1],2)
 
+        print('\n\n=================')
+        print('Country:',country)
+        print('Population:',population)
+        print('Total',case+': ',cases[-1],'(',
+              cases[-1]-cases[-2],'on',dates[-1],')')
+        print('Percentage infected:',round(cases[-1]/population,4))
+
         #Get the x and y for the fit
         x = np.arange(time[fit_start],max(time)+1+fit_pred,1)
         y_fit = exp(x,np.exp(linear_fit[0][0]),linear_fit[0][1])
@@ -194,11 +210,20 @@ for country in countries:
             y_fit = logistic(x,logistic_fit[0][0],logistic_fit[0][1],logistic_fit[0][2])
             #Prints the country, the last number of cases, the
             # logistic cutoff and the growth parameter
-            print(country,cases[-1],logistic_fit[0],y_fit[-1])
+            print('\nLogistic Growth fit:')
+            print('Predicted tomorrow:',int(y_fit[-fit_pred]),'
+                  (',int(y_fit[-fit_pred]-cases[-1]),'new cases )')
+
+            b_log = round(logistic_fit[0][1],2)
+            print('Cutoff parameter:',round(logistic_fit[0][2],1),'Growth parameter:',b)
         else:
             #Prints the country, the last number of cases and the
             # exponential growth parameter
-            print(country,cases[-1],y_fit[-1])
+            print('\nExponential Growth fit')
+            print('Predicted tomorrow:',round(y_fit[-fit_pred],0),
+                  '(',round(y_fit[-fit_pred]-cases[-1],0),'new cases )')
+            print('Exponential growth parameter:',b)
+
 
     
     #Keeps Ireland green!!
@@ -232,19 +257,14 @@ plt.xlim(-1)#,34)
 plt.legend()
 
 #Show the y-axis on a log scale
-plt.yscale('log')
+plt.yscale(yscale)
 
 
 #Axis labels under various conditions
 if norm == True:
-    plt.ylabel('Number of cases per million',fontsize=17)
-    if death == True:
-        plt.ylabel('Number of deaths per million',fontsize=16)
+    plt.ylabel('Number of '+case+' per million',fontsize=17)
 else:
-    if death == True:
-        plt.ylabel('Number of deaths',fontsize=16)
-    else:
-        plt.ylabel('Number of cases',fontsize=16)
+    plt.ylabel('Number of '+case,fontsize=16)
 
 if TIME == 'date':
     plt.xlabel('Number of days since '+str(date).split()[0],fontsize=16)
