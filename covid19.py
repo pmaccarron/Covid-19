@@ -70,7 +70,7 @@ death = False#True
 
 
 '''TIME defaults to the number of days since min_cases infections,
- put in 'date' to plot from a certain date abd then choose that date below'''
+ put in 'date' to plot from a certain date and then choose that date below'''
 # Note that starting from a specific date, the fits won't be accurate
 # as it will use the number of days for the x value
 TIME = False#'date'
