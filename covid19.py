@@ -50,6 +50,20 @@ fit = 'logistic'#None
 min_cases = 10
 
 
+#Normalise by population
+''' Enter True to normalise by population and show per million'''
+norm = False#True
+
+
+''' Change death to true to plot deaths instead of number of cases'''
+death = False#True
+
+
+'''Enter False to just show number of new cases per day,
+    otherwise it will show the total number of cases.'''
+cumulative = True#False
+
+
 #Start fitting from this point (early values might not be accurate)
 fit_start = 3
 
@@ -58,22 +72,10 @@ fit_start = 3
 fit_pred = 5
 
 
-#Normalise by population
-''' Enter True to normalise by population and show per million'''
-norm = False
-
-
-''' Change death to true to plot deaths instead of number of cases'''
-# Currently no death column in the Irish dataset on wikipedia
-death = False#True
-
-
 '''Change to False for linear scale, 'log' for log scale'''
 yscale = 'log'
 
 
-###############
-#Less important
 
 '''TIME defaults to the number of days since min_cases infections,
  put in 'date' to plot from a certain date abd then choose that date below'''
@@ -169,6 +171,15 @@ for country in countries:
 
     #Get the cases list for above the minimum number chosen
     cases = [u for u in cases if u >= min_cases]
+
+    #Check if cumulative number or not
+    if cumulative == False:
+        #Get the first case
+        c = [cases[0]]
+        #Subtract the previous total from each to get the cases per day
+        for i,u in enumerate(cases[1:]):
+            c += [u-cases[i]]
+        cases = c
 
     #Check if wanted to normalise
     if norm == True:
@@ -266,11 +277,13 @@ plt.legend()
 plt.yscale(yscale)
 
 
+perday = ' per day' if cumulative == False else ''
+
 #Axis labels under various conditions
 if norm == True:
-    plt.ylabel('Number of '+case+' per million',fontsize=17)
+    plt.ylabel('Number of '+case+' per million'+perday,fontsize=17)
 else:
-    plt.ylabel('Number of '+case,fontsize=16)
+    plt.ylabel('Number of '+case+perday,fontsize=16)
 
 if TIME == 'date':
     plt.xlabel('Number of days since '+str(date).split()[0],fontsize=16)
